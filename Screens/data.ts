@@ -32,7 +32,16 @@ export type activity = {
   checked: boolean;
 };
 
-export const planItems = [
+export type planItem = {
+  title: string;
+  subTitle: string;
+  completionPercentage: number;
+  color: string;
+  image: any;
+  activities: activity[];
+};
+
+export const planItems: planItem[] = [
   {
     title: "Water",
     subTitle: "6 cups per day",

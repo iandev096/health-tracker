@@ -14,7 +14,13 @@ import Backdrop from "../components/Backdrop/Backdrop";
 import CheckItem from "../components/CheckItem/CheckItem";
 import PlanItem from "../components/PlanItem/PlanItem";
 import { sizes, theme } from "../constants";
-import { activity, getDaysByWeek, graphData, planItems } from "./data";
+import {
+  activity,
+  getDaysByWeek,
+  graphData,
+  planItem,
+  planItems,
+} from "./data";
 
 interface HomePageProps {
   navigation: any;
@@ -24,12 +30,35 @@ const daysByWeek = getDaysByWeek();
 
 export const HomeScreen: React.FC<HomePageProps> = ({ navigation }) => {
   const [showBackdrop, setShowBackdrop] = useState(false);
-  const [currentActivities, setCurrentActivities] = useState<activity[]>([]);
-  const [currentItem, setCurrentItem] = useState<{
-    title: string;
-    subTitle: string;
-  }>();
+  const [currentItem, setCurrentItem] = useState<planItem>();
   const sheetRef = useRef<BottomSheet>(null);
+
+  const viewPlanItem = (item: planItem) => {
+    navigation.setOptions({ tabBarVisible: false });
+    setShowBackdrop(true);
+    sheetRef.current?.snapTo(0);
+    setCurrentItem(item);
+  };
+
+  const checkItem = (activity: activity) => {
+    const newActivities =
+      currentItem?.activities.map((item) => {
+        if (item.title === activity.title) {
+          item.checked = !item.checked;
+        }
+        return item;
+      }) || [];
+
+    setCurrentItem((item) => {
+      if (item) {
+        item = {
+          ...item,
+          activities: newActivities,
+        };
+      }
+      return item;
+    });
+  };
 
   const bsContent = () => (
     <View style={styles.bs}>
@@ -45,18 +74,9 @@ export const HomeScreen: React.FC<HomePageProps> = ({ navigation }) => {
         />
       </View>
       <View>
-        {currentActivities.map((activity) => (
+        {currentItem?.activities.map((activity) => (
           <CheckItem
-            onPress={() => {
-              const newActivities = currentActivities.map((item) => {
-                if (item.title === activity.title) {
-                  item.checked = !item.checked;
-                }
-                return item;
-              });
-
-              setCurrentActivities(newActivities);
-            }}
+            onPress={() => checkItem(activity)}
             key={activity.title}
             title={activity.title}
             time={`${activity.time.start} - ${activity.time.end}`}
@@ -91,16 +111,7 @@ export const HomeScreen: React.FC<HomePageProps> = ({ navigation }) => {
 
             {planItems.map((item) => (
               <PlanItem
-                onPress={() => {
-                  navigation.setOptions({ tabBarVisible: false });
-                  setShowBackdrop(true);
-                  sheetRef.current?.snapTo(0);
-                  setCurrentActivities(item.activities);
-                  setCurrentItem({
-                    title: item.title,
-                    subTitle: item.subTitle,
-                  });
-                }}
+                onPress={() => viewPlanItem(item)}
                 key={item.title}
                 title={item.title}
                 subTitle={item.subTitle}
