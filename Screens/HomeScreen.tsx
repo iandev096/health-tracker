@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { View, Image, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import BottomSheet from "reanimated-bottom-sheet";
 import {
   Heading,
